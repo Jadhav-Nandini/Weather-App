@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="App.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
+
+<body>
+    <nav class="search-box">
+        <div class="error">
+            <p>Invalid City Name</p>
+        </div>
+        <input type="text" placeholder="Enter City Name" spellcheck="false">
+        <button>Search</button>
+    </nav>
+
+    <main class="main-content">
+        <div class="box1">
+            <i class="weather-icon"></i>
+            <p class="weather-name"></p>
+            <h2 class="temp">22°C</h2>
+            <h3 class="city">New York</h3>
+        </div>
+        <div class="weather-info">
+            <div class="col">
+                <i class="ri-water-percent-line"></i>
+                <p class="humidity">50%</p>
+                <p>Humidity</p>
+            </div>
+            <div class="col">
+                <i class="ri-windy-fill"></i>
+                <p class="wind">15 km/h
+                <p>
+                <p>Wind Speed</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const apiKey = "569b730c41ca9df437c29b595dd403a9";
+        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+        const searchCity = document.querySelector(".search-box input");
+        const searchBtn = document.querySelector(".search-box button");
+        const weatherIcon = document.querySelector(".main-content .box1 .weather-icon");
+        const weatherName = document.querySelector(".main-content .box1 .weather-name")
+
+        async function checkWeather(cityName) {
+            const response = await fetch(apiUrl + cityName + `&appid=${apiKey}`);
+
+            if (response.status == 404) {
+                document.querySelector(".search-box .error p").style.display = "block"
+                document.querySelector(".main-content").style.display = "none";
+            }
+            else {
+                let data = await response.json();
+
+                console.log(data);
+                document.querySelector(".city").innerHTML = data.name;
+                document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+                document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+                document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+                if (data.weather[0].main == "Clouds") {
+                    weatherIcon.innerHTML = '<i class="ri-cloudy-line"></i>';
+                    weatherName.innerHTML = "Cloudy"
+                }
+                else if (data.weather[0].main == "Clear") {
+                    weatherIcon.innerHTML = '<i class="ri-sun-line"></i>'
+                    weatherName.innerHTML = "Clear"
+                }
+                else if (data.weather[0].main == "Rain") {
+                    weatherIcon.innerHTML = '<i class="ri-rainy-line"></i>'
+                    weatherName.innerHTML = "Rainy"
+                }
+                else if (data.weather[0].main == "Drizzle") {
+                    weatherIcon.innerHTML = '<i class="ri-drizzle-line"></i>'
+                    weatherName.innerHTML = "Drizzle"
+                }
+                else if (data.weather[0].main == "Mist") {
+                    weatherIcon.innerHTML = '<i class="ri-mist-fill"></i>'
+                    weatherName.innerHTML = "Mist"
+                }
+                else if (data.weather[0].main == "Smoke") {
+                    weatherIcon.innerHTML = '<i class="ri-cloud-windy-line"></i>'
+                    weatherName.innerHTML = "Smoke"
+                }
+
+
+                document.querySelector(".main-content").style.display = "block";
+                document.querySelector(".search-box .error p").style.display = "none"
+
+
+            }
+
+
+
+        }
+
+        searchCity.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") { // or event.keyCode === 13
+                checkWeather(searchCity.value)
+            }
+        });
+
+        searchBtn.addEventListener("click", () => {
+            checkWeather(searchCity.value)
+
+        })
+
+    </script>
+</body>
+
+</html>
